@@ -13,6 +13,7 @@ using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 using Windows.UI.Popups;
+using System.Windows.Input;
 
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
 
@@ -23,23 +24,29 @@ namespace TicTacToe
     /// </summary>
     public sealed partial class MainPage : Page
     {
+        //2D array for storing game buttons
+        private Button[,] gameButtons = new Button[3, 3];
+
         //Variables:
         private bool playerX = true;
         private bool gameWon = false;
-        private Button[,] gameButtons = new Button[3,3];
         private int moves = 0;
 
         //Statistics
         private int playerXwins = 0;
         private int playerOwins = 0;
 
+        //On page create
         public MainPage()
         {
             this.InitializeComponent();
-            Windows.UI.ViewManagement.ApplicationView.GetForCurrentView().SetPreferredMinSize(new Size(400, 270));
-            Windows.UI.ViewManagement.ApplicationView.PreferredLaunchViewSize = new Size(400, 270);
+            //Set preferred window size
+            Windows.UI.ViewManagement.ApplicationView.GetForCurrentView().SetPreferredMinSize(new Size(400, 310));
+            Windows.UI.ViewManagement.ApplicationView.PreferredLaunchViewSize = new Size(400, 310);
             Windows.UI.ViewManagement.ApplicationView.PreferredLaunchWindowingMode = Windows.UI.ViewManagement.ApplicationViewWindowingMode.PreferredLaunchViewSize;
+            //Add buttons to 2d arrays
             addButtons();
+            //Randomly select first player
             randomPlayer();
         }
 
@@ -95,7 +102,8 @@ namespace TicTacToe
                 int numberOfO = 0;
                 for(int j = 0; j < 3; j++)
                 {
-                    Button btn = gameButtons[i, j];
+                    Button btn = gameButtons[i, j]; //Get button
+                    //Check if button contains X or O and increase counter
                     if((btn.Content as String) == "X")
                     {
                         numberOfX++;
@@ -105,6 +113,7 @@ namespace TicTacToe
                         numberOfO++;
                     }
                 }
+                //If 3 in a row - player won.
                 if (numberOfO >= 3)
                 {
                     playerWon('O');
@@ -115,6 +124,8 @@ namespace TicTacToe
                     gameWon = true;
                 }
             }
+            
+            //Vertical - pretty much the same logic as horizontal.
             for(int i = 0; i < 3; i++)
             {
                 int numberOfX = 0;
@@ -141,6 +152,8 @@ namespace TicTacToe
                     gameWon = true;
                 }
             }
+
+            //Counters for two diagonals for each player
             int numberOfXU = 0;
             int numberOfXD = 0;
             int numberOfOU = 0;
@@ -168,6 +181,7 @@ namespace TicTacToe
                     numberOfOU++;
                 }
             }
+            //If either of diagonals is 3 in a row.
             if(numberOfOD >=3 || numberOfOU >=3)
             {
                 //O has won
@@ -232,15 +246,35 @@ namespace TicTacToe
         //New game button is pressed. 
         private void newGameButton_Click(object sender, RoutedEventArgs e)
         {
+            newGame();
+        }
+
+        //Create new game
+        private void newGame()
+        {
             gameWon = false;
             moves = 0;
             newGameButton.Visibility = Visibility.Collapsed;
-            foreach(Button b in gameButtons)
+            foreach (Button b in gameButtons)
             {
                 b.Content = "";
                 b.IsEnabled = true;
             }
             randomPlayer();
+        }
+
+        //Key pressed handler
+        private void Grid_KeyDown(object sender, KeyRoutedEventArgs e)
+        {
+            if(e.Key == Windows.System.VirtualKey.R)
+            {
+                playerXwins = playerOwins = 0;
+                statisticsXCount.Text = statisticsOCount.Text = "0";
+            }
+            else if(e.Key == Windows.System.VirtualKey.N)
+            {
+                newGame();
+            }
         }
     }
 }
