@@ -35,6 +35,7 @@ namespace TicTacToe
         //Statistics
         private int playerXwins = 0;
         private int playerOwins = 0;
+        private int ties = 0;
 
         //On page create
         public MainPage()
@@ -81,7 +82,7 @@ namespace TicTacToe
         //Select a random player - 50/50
         private void randomPlayer()
         {
-            playerX = new Random().Next(100) <= 50;
+            playerX = (new Random().Next(0, 100) < 50);
             if (playerX)
             {
                 currentPlayerText.Text = "X";
@@ -114,11 +115,11 @@ namespace TicTacToe
                     }
                 }
                 //If 3 in a row - player won.
-                if (numberOfO >= 3)
+                if (numberOfO == 3)
                 {
                     playerWon('O');
                     gameWon = true;
-                } else if(numberOfX >= 3)
+                } else if(numberOfX == 3)
                 {
                     playerWon('X');
                     gameWon = true;
@@ -142,11 +143,11 @@ namespace TicTacToe
                         numberOfO++;
                     }
                 }
-                if (numberOfO >= 3)
+                if (numberOfO == 3)
                 {
                     playerWon('O');
                     gameWon = true;
-                } else if(numberOfX >= 3)
+                } else if(numberOfX == 3)
                 {
                     playerWon('X');
                     gameWon = true;
@@ -182,12 +183,12 @@ namespace TicTacToe
                 }
             }
             //If either of diagonals is 3 in a row.
-            if(numberOfOD >=3 || numberOfOU >=3)
+            if(numberOfOD ==3 || numberOfOU ==3)
             {
                 //O has won
                 playerWon('O');
                 gameWon = true;
-            } else if(numberOfXD >= 3 || numberOfXU >= 3)
+            } else if(numberOfXD == 3 || numberOfXU == 3)
             {
                 playerWon('X');
                 gameWon = true;
@@ -211,8 +212,7 @@ namespace TicTacToe
         //Actions to perform when a player wins.
         private async void playerWon(char user)
         {
-            
-            await new MessageDialog(user + " has won the game! Kneel for the almighty winner!").ShowAsync();
+            await new MessageDialog(user + " has won the game!").ShowAsync();
             if(user == 'X')
             {
                 playerXwins++;
@@ -234,6 +234,7 @@ namespace TicTacToe
         //Actions to perform when the game ends in a tie
         private async void tie()
         {
+            statisticsTieCount.Text = (++ties).ToString();
             await new MessageDialog("Tie").ShowAsync();
             newGameButton.Visibility = Visibility.Visible;
             foreach (Button b in gameButtons)
@@ -268,8 +269,8 @@ namespace TicTacToe
         {
             if(e.Key == Windows.System.VirtualKey.R)
             {
-                playerXwins = playerOwins = 0;
-                statisticsXCount.Text = statisticsOCount.Text = "0";
+                playerXwins = playerOwins = ties = 0;
+                statisticsXCount.Text = statisticsOCount.Text = statisticsTieCount.Text = "0";
             }
             else if(e.Key == Windows.System.VirtualKey.N)
             {
